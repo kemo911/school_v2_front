@@ -1,63 +1,74 @@
 <template>
-  <div class="login-form-container">
-    <div class="login-box">
-      <h2>Login</h2>
-      <form @submit.prevent="onSubmit">
-        <CustomInput
-          v-model="email"
-          type="email"
-          placeholder="Email"
+  <div class="row window-height">
+    <div class="col-md-2 offset-md-5 self-center justify-center items-center">
+      <h2 class="text-primary">Signup</h2>
+      <q-form @submit.prevent="onSubmit" >
+        <q-input
+            type="email"
+            placeholder="Email"
+            v-model="email"
+            req
         />
-        <CustomInput
-          v-model="firstName"
-          type="text"
-          placeholder="First Name"
+
+        <q-input
+            type="text"
+            placeholder="First Name"
+            v-model="firstName"
         />
-        <CustomInput
-          v-model="lastName"
-          type="text"
-          placeholder="Last Name"
+
+        <q-input
+            type="text"
+            placeholder="Last Name"
+            v-model="lastName"
         />
-        <CustomInput
-          v-model="password"
-          type="password"
-          placeholder="Last Name"
-        />
-        <button
-          type="submit"
-          class="login-button"
-        >
-          Login
-        </button>
-        <p class="signup-prompt">
+
+
+
+
+        <q-input v-model="date" placeholder="Date of birth">
+          <template v-slot:prepend>
+            <q-icon name="event" class="cursor-pointer">
+              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-date v-model="date" mask="YYYY-MM-DD HH:mm">
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </q-input>
+
+        <div class="signup-prompt">
+          <q-btn type="submit" color="primary" label="Signup" />
+        </div>
+
+        <p class="text-primary">
           Already have an account ?
           <router-link
             to="/login"
             custom
             v-slot="{ href , navigate}"
           >
-            <a :href="href" @click="navigate">Login!</a>
+            <a :href="href" @click="navigate" class="text-secondary">Login!</a>
           </router-link>
         </p>
-      </form>
+      </q-form>
     </div>
   </div>
 </template>
 
 <script>
-import CustomInput from '../Inputs/CustomInput.vue';
 import './auth.css'
 
 export default {
-  components: {
-    CustomInput
-  },
   data() {
     return {
       email: '',
       password: '',
       firstName: '',
-      lastName: ''
+      lastName: '',
+      date: ''
     };
   },
   methods: {

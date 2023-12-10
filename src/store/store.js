@@ -59,7 +59,7 @@ export default new Vuex.Store({
                 localStorage.setItem('user', JSON.stringify(response.data.user))
                 commit(LOGIN_SUCCESS,response.data.user);
             }).catch(error => {
-                console.error("Login failed:", error);
+                throw error.response
             });
         },
         logout({ commit }) {

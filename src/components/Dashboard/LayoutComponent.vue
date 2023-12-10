@@ -1,95 +1,90 @@
 <template>
-  <div>
-    <v-app-bar
-      color="white"
-      style="box-shadow: 0 2px 4px rgba(128, 128, 128, 0.5) !important;"
-      app
-      dense
-      clipped-left
-      flat
+  <q-layout view="hHh Lpr lff" >
+    <q-header elevated class="bg-grey-1">
+      <q-toolbar class="text-grey-8">
+        <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
+        <q-toolbar-title>Header</q-toolbar-title>
+        <q-icon
+            name="logout_circle"
+            @click="logout"
+            size="2em"
+        />
+      </q-toolbar>
+    </q-header>
+
+    <q-drawer
+        v-model="drawer"
+        :width="200"
+        :breakpoint="400"
     >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>
-        <span class="second-word font uppercase">
-          <v-img
-            max-height="200"
-            max-width="200"
-            src="@/assets/logos/logo_colored.png"
-          /></span>
-      </v-toolbar-title>
+      <q-scroll-area style="height: calc(100% - 150px); margin-top: 150px; border-right: 1px solid #ddd">
+        <q-list padding>
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon name="inbox" />
+            </q-item-section>
 
-      <v-spacer />
-      <v-icon
-        color="gray"
-        @click="logout"
-      >
-        mdi-logout
-      </v-icon>
-    </v-app-bar>
+            <q-item-section>
+              Inbox
+            </q-item-section>
+          </q-item>
 
-    <v-navigation-drawer
-      v-model="drawer"
-      app
-      clipped
-      flat
-    >
-      <v-list>
-        <v-list-item>
-          <v-list-item-avatar>
-            <v-img
-              src="https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png"
-              max-width="200"
-              max-height="200"
-            />
-          </v-list-item-avatar>
-        </v-list-item>
+          <q-item active clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon name="star" />
+            </q-item-section>
 
-        <v-list-item link>
-          <v-list-item-content>
-            <v-list-item-title class="text-h6">
-              Karim
-            </v-list-item-title>
-            <v-list-item-subtitle>k.ashrf911@gmail.com</v-list-item-subtitle>
-          </v-list-item-content>
+            <q-item-section>
+              Star
+            </q-item-section>
+          </q-item>
 
-          <v-list-item-action>
-            <v-icon>mdi-menu-down</v-icon>
-          </v-list-item-action>
-        </v-list-item>
-      </v-list>
-      <v-divider />
-      <v-list
-        nav
-        dense
-      >
-        <v-list-item-group
-          color="primary"
-        >
-          <v-list-item
-            v-for="(item, i) in items"
-            :key="i"
-          >
-            <v-list-item-icon>
-              <v-icon v-text="item.icon" />
-            </v-list-item-icon>
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon name="send" />
+            </q-item-section>
 
-            <v-list-item-content>
-              <v-list-item-title v-text="item.title" />
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-    </v-navigation-drawer>
+            <q-item-section>
+              Send
+            </q-item-section>
+          </q-item>
 
-    <v-main style="background-color: #f2f2f2 ; height: 100vh">
-      <v-container>
+          <q-item clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon name="drafts" />
+            </q-item-section>
+
+            <q-item-section>
+              Drafts
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-scroll-area>
+
+      <q-img class="absolute-top" src="https://cdn.quasar.dev/img/material.png" style="height: 150px">
+        <div class="absolute-bottom bg-transparent">
+          <q-avatar size="56px" class="q-mb-sm">
+            <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+          </q-avatar>
+          <div class="text-weight-bold">{{user.object.first_name}}</div>
+          <div>{{user.object.email}}</div>
+        </div>
+      </q-img>
+    </q-drawer>
+
+    <q-page-container>
+      <q-page padding>
         <router-view v-if="$route.name !=='dashboard'" />
-      </v-container>
-    </v-main>
-  </div>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script>
+
+import router from "@/routes";
+import { mapState } from 'vuex'
+import store from "@/store/store";
 
 export default {
   data: () => ({
@@ -98,15 +93,18 @@ export default {
   computed: {
     items() {
       // Access the user type from Vuex
-      const userType = this.$store.state.user.object.groups[0];
+      const userType = store.state.user.object.groups[0];
       // Return the appropriate items based on the user type
-      return userType === 6 ? this.$store.state.sidebar.student : this.$store.state.sidebar.admin;
-    }
+      return userType === 6 ? store.state.sidebar.student : store.state.sidebar.admin;
+    },
+    ...mapState({
+      user : 'user'
+    })
   },
   methods:{
     logout() {
-      this.$store.dispatch('logout')
-      this.$router.push('/login')
+      store.dispatch('logout')
+      router.push('/login')
     }
   },
 };

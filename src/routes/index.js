@@ -11,7 +11,8 @@ const routes = [
         component: LayoutComponent,
         name: 'home',
         meta : {
-            title: 'Dashboard'
+            title: 'Dashboard',
+            requiredAuth: true
         },
         children: [
             ...studentRoutes,
@@ -26,6 +27,17 @@ const router = VueRouter.createRouter({
     routes
 });
 
+function requiresMetaField(route, field) {
+    if (route.meta && route.meta[field]) {
+        return true;
+    }
+    if (route.children) {
+        return route.children.some(childRoute => requiresMetaField(childRoute, field));
+    }
+    return false;
+}
+
+
 
 router.beforeEach((to, from, next) => {
     document.title = to.meta.title || 'Default Title';
@@ -33,25 +45,25 @@ router.beforeEach((to, from, next) => {
     const isLoggedIn = store.getters.isLoggedIn;
     const userType = store.state.user.object;
 
-    if (!isLoggedIn && to.meta.requiresAuth) {
-        // If the user is not logged in and the route requires authentication
+    const authRequired = requiresMetaField(to, 'requiredAuth');
+    const studentAccessRequired = requiresMetaField(to, 'requiredStudent');
+    const adminAccessRequired = requiresMetaField(to, 'requiredAdmin');
+
+
+    if (!isLoggedIn && authRequired) {
         next('/login');
     } else if (isLoggedIn && to.name === 'login') {
-        // If the user is already logged in and tries to visit the login page
         next('/');
     } else if (isLoggedIn) {
-        // Check for student access
-        if (to.meta.requiredStudent && userType.groups[0] !== 6) {
-            // If the user is not a student but tries to access a student-only route
-            next('/admin'); // or redirect to an appropriate route
-        } else if (to.meta.requiredAdmin && userType.groups[0] !== 5) {
-            // If the user is not an admin but tries to access an admin-only route
-            next('/student'); // or redirect to an appropriate route
+        if (studentAccessRequired && userType.groups[0] !== 6) {
+            next('/admin');
+        } else if (adminAccessRequired && userType.groups[0] !== 5) {
+            next('/student');
         } else {
-            next(); // The user type matches the route requirement
+            next();
         }
     } else {
-        next(); // Proceed for non-protected routes
+        next();
     }
 });
 export default router;

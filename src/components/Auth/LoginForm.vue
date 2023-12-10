@@ -1,60 +1,60 @@
 <template>
-  <div class="login-form-container">
-    <div class="login-box">
-      <h2>Login</h2>
-      <form @submit.prevent="onSubmit">
-        <CustomInput
-          v-model="username"
-          type="text"
-          placeholder="Email"
+  <div class="row window-height">
+    <div class="col-md-2 offset-md-5 self-center justify-center items-center">
+      <h2 class="text-primary">Login</h2>
+      <q-form @submit.prevent="onSubmit" class="q-gutter-lg">
+        <q-input
+            type="text"
+            placeholder="Email"
+            v-model="username"
+            :dense="dense"
         />
-        <CustomInput
-          v-model="password"
-          type="password"
-          placeholder="Password"
+
+        <q-input
+            type="password"
+            placeholder="Password"
+            v-model="password"
+            :dense="dense"
         />
-        <button
-          type="submit"
-          class="login-button"
-        >
-          Login
-        </button>
-        <p class="signup-prompt">
+
+        <div class="signup-prompt">
+          <q-btn type="submit" color="primary" label="Login" />
+        </div>
+
+        <p class="text-primary">
           Don't have an account?
           <router-link
             to="/signup"
             v-slot="{ href , navigate}"
           >
-            <a :href="href" @click="navigate">Signup!</a>
+            <a :href="href" @click="navigate" class="text-secondary">Signup!</a>
           </router-link>
         </p>
-      </form>
+      </q-form>
     </div>
   </div>
 </template>
 
 <script>
-import CustomInput from '../Inputs/CustomInput.vue';
-
 import './auth.css'
 import router from "@/routes";
+import store from "@/store/store";
 
 export default {
-  components: {
-    CustomInput
-  },
   data() {
-    return {
+    return{
+      dense: false,
       username: '',
       password: ''
-    };
+    }
   },
   methods: {
     onSubmit() {
-      this.$store.dispatch('login', {
+      store.dispatch('login', {
         username: this.username,
         password: this.password
-      }).then(router.push('/'))
+      })
+          .then(() => router.push('/'))
           .catch((error) => console.log(error))
     }
   }

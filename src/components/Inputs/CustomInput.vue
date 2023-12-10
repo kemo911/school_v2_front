@@ -1,17 +1,30 @@
 <template>
   <div class="mb-3">
-    <input
-      :type="type"
-      :placeholder="placeholder"
-      :value="value"
-      class="form-control"
-      @input="$emit('input', $event.target.value)"
-    >
+    <q-input
+        :type="type"
+        :placeholder="placeholder"
+        :dense="dense" :value="modelValue"
+        @change="event => console.log(event)" />
   </div>
 </template>
 
 <script>
+import { ref } from 'vue'
 export default {
+  setup (props , context) {
+    const dense = ref(false);
+    const updateValue = (value) => {
+
+      console.log(value)
+      context.emit('update:modelValue', value);
+    };
+
+
+    return {
+      dense,
+      updateValue
+    };
+  },
   props: {
     type: {
       type: String,
@@ -21,10 +34,10 @@ export default {
       type: String,
       default: null
     },
-    value: {
+    modelValue: {
       type: String,
       default: null
-    }
+    },
   }
 };
 </script>
